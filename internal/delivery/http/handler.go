@@ -2,8 +2,15 @@ package http_delivery
 
 import (
 	"context"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"www.github.com/Wolves-from-MISIS/internal/models"
+)
+
+var (
+	key   = []byte("super-secret-key")
+	store = cookie.NewStore(key)
 )
 
 type UserService interface {
@@ -34,6 +41,7 @@ func NewHandler(userService UserService, teamService TeamService) *Handler {
 
 func (h *Handler) Init(swaggerUrl string) *gin.Engine {
 	r := gin.Default()
+	r.Use(sessions.Sessions("mysession", store))
 
 	// api group v1
 	api := r.Group("/api/v1")

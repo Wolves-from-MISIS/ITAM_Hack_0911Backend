@@ -2,6 +2,7 @@ package http_delivery
 
 import (
 	"errors"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"regexp"
@@ -15,6 +16,16 @@ import (
 
 func (h *Handler) LogIn(c *gin.Context) {
 	var login models.LogInRequest
+
+	session := sessions.Default(c)
+
+	// Проверка наличия сессии
+	if userID := session.Get("user_id"); userID != nil {
+		// Пользователь уже авторизован, выполните действия для авторизованных пользователей.
+		// Например, перенаправьте его на личную страницу или верните сообщение о том, что он уже авторизован.
+		c.JSON(http.StatusOK, gin.H{"message": "Вы уже авторизованы."})
+		return
+	}
 
 	if err := c.ShouldBindJSON(&login); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -66,7 +77,16 @@ func (h *Handler) UserRegistration(c *gin.Context) {
 	}
 
 	c.JSON(200, models.SucceedMessage)
+
 	//c.Redirect(200, "/home") TODO
+}
+
+func (h *Handler) FillOutUserProfile(c *gin.Context) {
+	// заполнение информации пользователя
+}
+
+func (h *Handler) UserRequireTeam(c *gin.Context) {
+	// пользователь хочет запросить чтобы ему нашли команду
 }
 
 func (h *Handler) validateLogIn(l models.LogInRequest) error {
