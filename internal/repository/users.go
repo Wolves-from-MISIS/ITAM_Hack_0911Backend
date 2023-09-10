@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"github.com/jackc/pgx/v5/pgconn"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"www.github.com/Wolves-from-MISIS/internal/models"
@@ -22,6 +23,11 @@ func (s *HackLabRepository) RegisterUser(ctx context.Context, request models.Reg
 		request.Username, request.Email, hashedPassword)
 
 	if err != nil {
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			if pgErr.Code == "23505" {
+				return models.UserAlreadyExistErr
+			}
+		}
 		log.Println("Failed to insert user:", err)
 		return err
 	}

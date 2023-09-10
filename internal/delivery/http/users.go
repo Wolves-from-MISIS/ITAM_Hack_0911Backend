@@ -30,9 +30,11 @@ func (h *Handler) LogIn(c *gin.Context) {
 	err = h.userService.LogIn(c, login.Username, login.Email, login.Password)
 	if err != nil {
 		if errors.Is(err, models.InvalidUserOrPassword) {
-			c.JSON(http.StatusUnauthorized, err)
+			c.JSON(http.StatusUnauthorized, models.ResponseMessage{Message: err.Error()})
 			return
 		}
+		c.JSON(http.StatusInternalServerError, models.ResponseMessage{Message: err.Error()})
+		return
 	}
 
 	c.JSON(200, models.SucceedMessage)
@@ -55,10 +57,12 @@ func (h *Handler) UserRegistration(c *gin.Context) {
 
 	err = h.userService.Registration(c, login)
 	if err != nil {
-		if errors.Is(err, models.InvalidUserOrPassword) {
-			c.JSON(http.StatusUnauthorized, err)
+		if errors.Is(err, models.UserAlreadyExistErr) {
+			c.JSON(http.StatusSeeOther, err)
 			return
 		}
+		c.JSON(http.StatusInternalServerError, models.ResponseMessage{Message: err.Error()})
+		return
 	}
 
 	c.JSON(200, models.SucceedMessage)

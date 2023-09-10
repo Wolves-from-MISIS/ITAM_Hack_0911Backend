@@ -76,3 +76,10 @@ CREATE TABLE IF NOT EXISTS team_requests (
                                              team_id INT references teams(id),
                                              user_id INT references users(id)
 );
+
+-- Таблица формы регистрации на хакатон
+CREATE TABLE IF NOT EXISTS registration_form (
+                                                  hackathon_id INT references hackathons(id),
+                                                  name VARCHAR(255),
+                                                  team_id INT references teams(id)
+);

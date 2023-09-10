@@ -38,8 +38,8 @@ func (h *Handler) Init(swaggerUrl string) *gin.Engine {
 	// api group v1
 	api := r.Group("/api/v1")
 
-	api.GET("/login", h.LogIn)
-	api.GET("/registration", h.UserRegistration)
+	api.POST("/login", h.LogIn)
+	api.POST("/registration", h.UserRegistration)
 
 	return r
 }
